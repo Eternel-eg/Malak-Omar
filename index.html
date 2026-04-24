@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Great+Vibes&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     :root {
@@ -732,6 +733,30 @@
 </button>
 
 <script>
+/* ══════════════════════════════════════════════════════════
+   EMAIL JS  —  FILL IN YOUR CREDENTIALS BELOW
+   1. Sign up at https://www.emailjs.com (free plan works)
+   2. Add an Email Service (Gmail, Outlook, etc.)
+   3. Create an Email Template (see comment below for variables)
+   4. Copy your Public Key from Account → API Keys
+   ══════════════════════════════════════════════════════════ */
+const EMAILJS_PUBLIC_KEY  = 'FayuR2XuRfubxlUPV';   // ← replace
+const EMAILJS_SERVICE_ID  = 'eternel.eg@gmail.com';   // ← replace
+const EMAILJS_TEMPLATE_ID = 'template_gvo1mqr';  // ← replace
+
+/* ── EMAIL TEMPLATE VARIABLES (use these in your EmailJS template) ──
+   {{to_email}}      — guest's email address
+   {{guest_name}}    — full name
+   {{attendance}}    — "Joyfully Attending" or "Regretfully Declining"
+   {{guest_count}}   — number of guests (0 if not attending)
+   {{dietary}}       — dietary preference
+   {{message}}       — personal message to the couple
+   {{ticket_url}}    — the unique QR / digital pass URL
+   {{qr_image}}      — base64 PNG of the QR code (embed with <img src="{{qr_image}}">)
+   {{submitted_at}}  — date & time of submission
+   ──────────────────────────────────────────────────────── */
+emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
 /* ── CHECK FOR DIGITAL TICKET URL PARAMS ────────────────── */
 const urlParams = new URLSearchParams(window.location.search);
 const ticketData = urlParams.get('ticket');
@@ -880,45 +905,75 @@ if (ticketData) {
 
   function submitRsvp(e) {
     e.preventDefault();
-    const name = document.getElementById('f-name').value.trim();
-    if (!name || !attendVal) { 
-      if(!name) document.getElementById('f-name').focus(); 
+    const name  = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    if (!name || !attendVal) {
+      if (!name) document.getElementById('f-name').focus();
       else alert("Please select whether you are attending.");
-      return; 
+      return;
     }
-    
-    // 1. Collect Data & Encode for the URL
-    const diet = document.getElementById('f-dietary').value;
-    const ticketData = { 
-      n: name, 
-      a: attendVal, 
-      g: (attendVal === 'yes' ? guestCnt : 0), 
-      d: diet 
-    };
-    
-    // Creates a safe, encoded string out of the json object
-    const encodedData = btoa(JSON.stringify(ticketData));
-    
-    // Create the unique link mapping back to this exact page
-    const ticketUrl = window.location.origin + window.location.pathname + "?ticket=" + encodedData;
 
-    // 2. Update UI
+    // 1. Collect Data & Encode for the URL
+    const diet    = document.getElementById('f-dietary').value;
+    const message = document.getElementById('f-msg').value.trim();
+    const guests  = attendVal === 'yes' ? guestCnt : 0;
+
+    const ticketData = { n: name, a: attendVal, g: guests, d: diet };
+    const encodedData = btoa(JSON.stringify(ticketData));
+    const ticketUrl   = window.location.origin + window.location.pathname + "?ticket=" + encodedData;
+
+    // 2. Update UI — show success panel immediately
     document.getElementById('rsvp-form-wrap').style.display = 'none';
     const s = document.getElementById('rsvp-success');
     s.classList.add('show');
-    
+
     // 3. Generate QR Code
-    document.getElementById('qr-container').innerHTML = ''; // Clear fallback
-    new QRCode(document.getElementById("qr-container"), {
-      text: ticketUrl,
-      width: 160,
-      height: 160,
-      colorDark : "#0b1820",
-      colorLight : "#ffffff",
-      correctLevel : QRCode.CorrectLevel.M
+    document.getElementById('qr-container').innerHTML = '';
+    new QRCode(document.getElementById('qr-container'), {
+      text:         ticketUrl,
+      width:        160,
+      height:       160,
+      colorDark:    '#0b1820',
+      colorLight:   '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
     });
 
-    setTimeout(() => s.scrollIntoView({behavior:'smooth',block:'center'}), 100);
+    setTimeout(() => s.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+
+    // 4. Send email via EmailJS (after a short tick so QR canvas renders)
+    setTimeout(() => {
+      let qrImageData = '';
+      try {
+        const canvas = document.getElementById('qr-container').querySelector('canvas');
+        if (canvas) qrImageData = canvas.toDataURL('image/png');
+      } catch (_) {}
+
+      const now = new Date();
+      const submittedAt = now.toLocaleString('en-GB', {
+        weekday: 'long', year: 'numeric', month: 'long',
+        day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      const templateParams = {
+        to_email:    email || 'no-email-provided',
+        guest_name:  name,
+        attendance:  attendVal === 'yes' ? 'Joyfully Attending ✓' : 'Regretfully Declining ✕',
+        guest_count: guests,
+        dietary:     diet || 'No special requirements',
+        message:     message || '—',
+        ticket_url:  ticketUrl,
+        qr_image:    qrImageData,
+        submitted_at: submittedAt,
+      };
+
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(() => {
+          console.log('✅ RSVP email sent successfully');
+        })
+        .catch((err) => {
+          console.warn('⚠️ EmailJS error (RSVP still recorded):', err);
+        });
+    }, 300);
   }
 }
 </script>
