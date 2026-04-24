@@ -913,24 +913,23 @@ if (ticketData) {
       return;
     }
 
-    // 1. Collect Data & Encode for the URL
+    // 1. Collect Data & Create Unique Guest ID
     const diet    = document.getElementById('f-dietary').value;
     const message = document.getElementById('f-msg').value.trim();
     const guests  = attendVal === 'yes' ? guestCnt : 0;
-
-    const ticketData = { n: name, a: attendVal, g: guests, d: diet };
-    const encodedData = btoa(JSON.stringify(ticketData));
-    const ticketUrl   = window.location.origin + window.location.pathname + "?ticket=" + encodedData;
+    
+    // Create a unique ID for this guest (e.g., "guest_1700000000000")
+    const guestId = 'guest_' + Date.now();
 
     // 2. Update UI — show success panel immediately
     document.getElementById('rsvp-form-wrap').style.display = 'none';
     const s = document.getElementById('rsvp-success');
     s.classList.add('show');
 
-    // 3. Generate QR Code
+    // 3. Generate QR Code (USING THE GUEST ID SO THE SCANNER CAN READ IT)
     document.getElementById('qr-container').innerHTML = '';
     new QRCode(document.getElementById('qr-container'), {
-      text:         ticketUrl,
+      text:         guestId, // <--- The scanner will read this exact ID
       width:        160,
       height:       160,
       colorDark:    '#0b1820',
@@ -940,7 +939,28 @@ if (ticketData) {
 
     setTimeout(() => s.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
 
-    // 4. Send email via EmailJS (after a short tick so QR canvas renders)
+    // 4. SEND DATA TO GOOGLE SHEETS (Background Sync)
+    // ⚠️ PASTE YOUR GOOGLE SCRIPT URL HERE:
+    const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_UNIQUE_ID/exec"; 
+
+    if (attendVal === 'yes') { // Only register them in the system if they are attending
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'uploadUsers',
+          users: [{
+            userId: guestId,
+            username: email || guestId,
+            passwordHash: 'guest_pass', // Not needed for login, but fills the column
+            name: name + (guests > 1 ? ` (+${guests-1} guests)` : ''),
+            role: 'guest',
+            createdAt: Date.now()
+          }]
+        })
+      }).catch(err => console.error("Google Sheets Sync Failed:", err));
+    }
+
+    // 5. Send email via EmailJS (after a short tick so QR canvas renders)
     setTimeout(() => {
       let qrImageData = '';
       try {
@@ -961,7 +981,7 @@ if (ticketData) {
         guest_count: guests,
         dietary:     diet || 'No special requirements',
         message:     message || '—',
-        ticket_url:  ticketUrl,
+        ticket_url:  "Show this QR code at the entrance!", // Swapped out the old URL logic
         qr_image:    qrImageData,
         submitted_at: submittedAt,
       };
