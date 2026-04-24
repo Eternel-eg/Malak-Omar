@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Malak & Omar — September 4th, 2026</title>
+  <title>Haidy & Adam — September 19th, 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Great+Vibes&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet" />
@@ -544,7 +544,7 @@
 
 <div id="screen-ticket">
   <div class="ticket-card">
-    <h1 class="ticket-title">Malak & Omar</h1>
+    <h1 class="ticket-title">Haidy & Adam</h1>
     <div class="ticket-subtitle">Digital Guest Pass</div>
     
     <div class="drule"><div class="dl"></div><div class="dd"></div><div class="dr"></div></div>
@@ -566,8 +566,8 @@
     <img class="load-logo" src="image2.png" alt="M&O Monogram" onerror="this.style.display='none';document.getElementById('lf').style.display='flex';"/>
     <div id="lf" class="load-logo-fb" style="display:none;">M & O</div>
   </div>
-  <div class="load-names">Malak & Omar</div>
-  <div class="load-sub">September 4th  ·  2026</div>
+  <div class="load-names">Haidy & Adam</div>
+  <div class="load-sub">September 19th  ·  2026</div>
   <div class="load-bar-wrap"><div class="load-bar" id="loading-bar"></div></div>
   <button id="btn-enter">Open Invitation</button>
 </div>
@@ -585,14 +585,14 @@
 
         <div class="sec-names">
           <p class="txt-together"></br></br>Together with their families</p>
-          <h1 class="txt-names">Malak <span class="amp">&</span> Omar</h1>
+          <h1 class="txt-names">Haidy <span class="amp">&</span> Adam</h1>
           <p class="txt-request">Request the pleasure of your presence<br/>at their marriage</p>
         </div>
 
         <div class="sec-datetime">
           <div class="drule"><div class="dl"></div><div class="dd2"></div><div class="dd"></div><div class="dd2"></div><div class="dr"></div></div>
           <span class="label-pill">Date & Time</span>
-          <p class="txt-date">September 4th, 2026</p>
+          <p class="txt-date">September 19th, 2026</p>
           <p class="txt-time">Ceremony at Sunset</p>
           <div class="drule" style="margin-bottom:0;"><div class="dl"></div><div class="dd2"></div><div class="dd"></div><div class="dd2"></div><div class="dr"></div></div>
         </div>
@@ -634,7 +634,7 @@
               <span class="cal-lbl">Google Calendar</span>
               <div class="cal-arr"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
             </a>
-            <a class="btn-cal cal-a" id="cal-ics" href="#" download="MalakAndOmar_Wedding.ics">
+            <a class="btn-cal cal-a" id="cal-ics" href="#" download="HaidyAndAdam_Wedding.ics">
               <div class="cico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="1.8"/><line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="1.8"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="1.8"/></svg></div>
               <span class="cal-lbl">Apple / Download (.ics)</span>
               <div class="cal-arr"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
@@ -691,7 +691,7 @@
                 </select>
               </div>
               <div class="f-field">
-                <label class="f-lbl" for="f-msg">Your message to Malak & Omar</label>
+                <label class="f-lbl" for="f-msg">Your message to Haidy & Adam</label>
                 <textarea class="f-ta" id="f-msg" placeholder="Share your wishes, a memory, or simply a word of love for the happy couple…"></textarea>
               </div>
               <button type="submit" class="btn-submit">Send my RSVP  →</button>
@@ -709,7 +709,7 @@
         </div>
 
         <div class="sec-closing">
-          <p class="txt-closing">With all Our love Malak & Omar ❤︎</p>
+          <p class="txt-closing">With all Our love Haidy & Adam ❤︎</p>
         </div>
 
         <div class="waves-footer">
@@ -872,15 +872,15 @@ if (ticketData) {
   function buildCalLinks() {
     const startDT = '20260904T180000';
     const endDT   = '20260904T230000';
-    const title   = encodeURIComponent('Malak & Omar — Wedding Celebration');
+    const title   = encodeURIComponent('Haidy & Adam — Wedding Celebration');
     const loc     = encodeURIComponent('Gigi Beach Resort, Ghazala Bay, Sharm El-Sheikh, Egypt');
-    const desc    = encodeURIComponent('We joyfully invite you to celebrate the marriage of Malak & Omar.\n\nDirections: https://maps.app.goo.gl/pxZFaNXYvDWofP9DA');
+    const desc    = encodeURIComponent('We joyfully invite you to celebrate the marriage of Haidy & Adam.\n\nDirections: https://maps.app.goo.gl/pxZFaNXYvDWofP9DA');
 
     document.getElementById('cal-google').href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDT}/${endDT}&location=${loc}&details=${desc}`;
 
     const ics = [
-      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Malak & Omar//EN','CALSCALE:GREGORIAN',
-      'BEGIN:VEVENT',`DTSTART:${startDT}`,`DTEND:${endDT}`,`SUMMARY:Malak & Omar — Wedding Celebration`,`LOCATION:Gigi Beach Resort\\, Ghazala Bay\\, Sharm El-Sheikh\\, Egypt`,`DESCRIPTION:We joyfully invite you to celebrate our marriage.\\nhttps://maps.app.goo.gl/pxZFaNXYvDWofP9DA`,`URL:https://maps.app.goo.gl/pxZFaNXYvDWofP9DA`,
+      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Haidy & Adam//EN','CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',`DTSTART:${startDT}`,`DTEND:${endDT}`,`SUMMARY:Haidy & Adam — Wedding Celebration`,`LOCATION:Gigi Beach Resort\\, Ghazala Bay\\, Sharm El-Sheikh\\, Egypt`,`DESCRIPTION:We joyfully invite you to celebrate our marriage.\\nhttps://maps.app.goo.gl/pxZFaNXYvDWofP9DA`,`URL:https://maps.app.goo.gl/pxZFaNXYvDWofP9DA`,
       'END:VEVENT','END:VCALENDAR'
     ].join('\r\n');
     const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
