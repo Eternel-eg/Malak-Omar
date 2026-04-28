@@ -1186,16 +1186,7 @@ if (ticketData) {
     // 3. Generate QR Code — encodes a URL so a normal camera shows the elegant pass page
     //    The URL also carries ?id=GUEST_ID for the QR scanner system to extract directly
     document.getElementById('qr-container').innerHTML = '';
-    const _baseUrl = window.location.href.split('?')[0];
-    const _ticketPayload = btoa(unescape(encodeURIComponent(JSON.stringify({
-      id: guestId,
-      n:  name,
-      a:  attendVal,
-      g:  guests,
-      d:  diet,
-      m:  message
-    }))));
-    const _ticketUrl = `${_baseUrl}?id=${guestId}&ticket=${_ticketPayload}`;
+    const _ticketUrl = `ATTENDQR:${guestId}:${btoa(guestId + 'ATTENDQR_SECURE_SALT_2024_V2')}`;
 
     new QRCode(document.getElementById('qr-container'), {
       text:         _ticketUrl,   // ← camera opens beautiful pass; scanner reads ?id= param
@@ -1210,21 +1201,23 @@ if (ticketData) {
 
     // 4. SEND DATA TO GOOGLE SHEETS (Background Sync)
     // ⚠️ PASTE YOUR GOOGLE SCRIPT URL HERE:
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykpM9fBbvGVM9TiRjhhk96WBV5pyF7xWUyqIDIE52SVO4QLPIUu9CsVOAIh2SIaLxI/exec"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzawUAM1y7YpN9utnzuKvtNgldduU9k38b_eIARCzCDrGhVqEbuRL9rEJdWNIq7Q-LLfA/exec"; // ← Paste your Web App URL from GoogleAppsScript_API.gs deployment
 
     if (attendVal === 'yes') { // Only register them in the system if they are attending
       fetch(SCRIPT_URL, {
         method: 'POST',
         body: JSON.stringify({
-          action: 'uploadUsers',
-          users: [{
-            userId: guestId,
-            username: email || guestId,
-            passwordHash: 'guest_pass', // Not needed for login, but fills the column
-            name: name + (guests > 1 ? ` (+${guests-1} guests)` : ''),
-            role: 'guest',
-            createdAt: Date.now()
-          }]
+          action: 'addUser',
+          userid: guestId,
+          username: email || guestId,
+          password: 'guest_pass',
+          name: name + (guests > 1 ? ` (+${guests-1} guests)` : ''),
+          department: 'Guests',
+          role: 'staff',
+          email: email,
+          phone: '',
+          joindate: new Date().toISOString().split('T')[0],
+          active: 'TRUE'
         })
       }).catch(err => console.error("Google Sheets Sync Failed:", err));
     }
